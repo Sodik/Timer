@@ -85,12 +85,12 @@ class _HomePageState extends State<HomePage> {
 
   _onVolume() {
     if (_soundOff) {
-      tickPlayer.on();
+      tickPlayer.off();
       setState(() {
         _soundOff = false;
       });
     } else {
-      tickPlayer.off();
+      tickPlayer.on();
       setState(() {
         _soundOff = true;
       });
