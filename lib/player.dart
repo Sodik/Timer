@@ -34,7 +34,6 @@ class Player {
     }
 
     _player.stop();
-    _player = null;
   }
 
   off() {
