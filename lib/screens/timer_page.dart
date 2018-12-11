@@ -34,6 +34,8 @@ class TimerPageState extends State<TimerPage> {
   void deactivate() {
     super.deactivate();
 
+    _tickPlayer.stop();
+    _alarmPlayer.stop();
     if (_timer != null) {
       _timer.stop();
     }
