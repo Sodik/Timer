@@ -20,9 +20,6 @@ class App extends StatelessWidget {
         }),
         '/timer': (context) => new TimerPage(
           duration: _duration,
-          onFinish: () {
-            Navigator.pushNamed(context, '/');
-          },
         ),
       }
     );

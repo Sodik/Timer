@@ -40,43 +40,46 @@ class HomePageState extends State<HomePage> {
 
   Widget build(BuildContext context) {
     return new Scaffold(
-        body: new Container(
-            child: new Column(
-              children: <Widget>[
-                /*new Container(
-                  padding: EdgeInsets.only(top: 20.0),
-                  alignment: Alignment(0.95, 0),
-                  child: new IconButton(
-                    icon: new Icon(
-                        _soundOff ? Icons.volume_mute : Icons.volume_off
-                    ),
-                    onPressed: _onVolume,
-                  ),
-                ),*/
-                new Container(
-                  height: 140.0,
-                  child: new CupertinoTimerPicker(
-                    initialTimerDuration: _duration,
-                    onTimerDurationChanged: _setDuration,
-                  ),
-                ),
-              ],
-            )
-        ),
-      bottomNavigationBar: new Row(
+      body: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          new RestoreButton(
-            isActive: _duration.inMilliseconds > 0,
-            onClick: _onReset,
-          ),
-          new StartPauseButton(
-            isDisabled: _duration.inMilliseconds == 0,
-            isActive: false,
-            onClick: _onStartPause,
+          /*new Container(
+            padding: EdgeInsets.only(top: 20.0),
+            alignment: Alignment(0.95, 0),
+            child: new IconButton(
+              icon: new Icon(
+                  _soundOff ? Icons.volume_mute : Icons.volume_off
+              ),
+              onPressed: _onVolume,
+            ),
+          ),*/
+          new Container(
+            height: 140.0,
+            child: new CupertinoTimerPicker(
+              initialTimerDuration: _duration,
+              onTimerDurationChanged: _setDuration,
+            ),
           ),
         ],
       ),
+      bottomNavigationBar: new Container(
+        padding: EdgeInsets.only(bottom: 20),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new RestoreButton(
+              isActive: _duration.inMilliseconds > 0,
+              onClick: _onReset,
+            ),
+            new StartPauseButton(
+              isDisabled: _duration.inMilliseconds == 0,
+              isActive: false,
+              onClick: _onStartPause,
+            ),
+          ],
+        ),
+      )
     );
   }
 }

@@ -1,24 +1,6 @@
 import 'dart:async';
-import 'player.dart';
 import 'formaters.dart';
 import 'package:flutter/material.dart';
-
-class TimerInterface {
-  final Duration duration;
-  final ValueChanged<String> onTick;
-  final Function onFinish;
-
-  TimerInterface(this.duration,  this.onTick, this.onFinish);
-
-  get isActive {}
-  get isFinished {}
-
-  void start() {}
-  void pause() {}
-  void resume() {}
-  void stop() {}
-  void reset() {}
-}
 
 enum TimerStatus {
   idle,
@@ -28,17 +10,25 @@ enum TimerStatus {
   stopped,
 }
 
-class TimerClass implements TimerInterface {
+class TimerClass {
   final Duration duration;
   final ValueChanged<String> onTick;
   final Function onFinish;
+  final Function onStart;
+  final Function onPause;
   TimerStatus _status = TimerStatus.idle;
   int _spentTime = 0;
   int _endTime;
   int _startTime;
   Timer _timer;
 
-  TimerClass(Duration this.duration,  this.onTick, this.onFinish);
+  TimerClass({
+    this.duration,
+    this.onTick,
+    this.onFinish,
+    this.onStart,
+    this.onPause,
+  });
 
   bool get isActive {
     return
@@ -52,6 +42,7 @@ class TimerClass implements TimerInterface {
   }
 
   void start() {
+    onStart();
     _status = TimerStatus.active;
     _startTime = new DateTime.now().millisecondsSinceEpoch;
     _endTime = _startTime + duration.inMilliseconds - _spentTime;
@@ -61,6 +52,7 @@ class TimerClass implements TimerInterface {
   }
 
   void pause() {
+    onPause();
     _status = TimerStatus.paused;
     _spentTime += _timer.tick * Duration.millisecondsPerSecond;
     _timer.cancel();
@@ -100,67 +92,5 @@ class TimerClass implements TimerInterface {
     int time = _endTime - (_startTime + _timer.tick * Duration.millisecondsPerSecond);
 
     return formatTime(time);
-  }
-}
-
-class TimerWithSound implements TimerInterface {
-  final Duration duration;
-  final ValueChanged<String> onTick;
-  final Function onFinish;
-  TimerClass _timer;
-  Player _tickPlayer;
-  Player _alarmPlayer;
-
-
-  TimerWithSound(Duration this.duration,  this.onTick, this.onFinish) {
-    _timer = new TimerClass(duration, onTick, _onFinish);
-    _tickPlayer = new Player(
-      file: 'tick.mp3',
-    );
-    _alarmPlayer = new Player(
-      file: 'alarm.mp3',
-      duration: 3,
-    );
-  }
-
-  get isActive {
-    return _timer.isActive;
-  }
-
-  get isFinished {
-    return _timer.isFinished;
-  }
-
-  void _onFinish() async {
-    _tickPlayer.stop();
-    _timer.stop();
-    await _alarmPlayer.play();
-    onFinish();
-  }
-
-  void start() {
-    _timer.start();
-    _tickPlayer.play();
-  }
-
-  void pause() {
-    _timer.pause();
-    _tickPlayer.stop();
-  }
-
-  void resume() {
-    _timer.resume();
-    _tickPlayer.play();
-  }
-
-  void stop() {
-    _timer.stop();
-    _tickPlayer.stop();
-    _alarmPlayer.stop();
-  }
-
-  void reset() {
-    _timer.reset();
-    _tickPlayer.stop();
   }
 }
