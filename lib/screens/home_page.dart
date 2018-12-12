@@ -26,6 +26,10 @@ class HomePageState extends State<HomePage> {
 
   Widget build(BuildContext context) {
     return new Scaffold(
+      floatingActionButton: widget.hasSavedTimers ? new FloatingActionButton(
+        child: new Icon(Icons.view_list),
+        onPressed: widget.hasSavedTimers ? () => Navigator.pushNamed(context, '/saved') : null,
+      ) : null,
       body: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -53,10 +57,6 @@ class HomePageState extends State<HomePage> {
               isActive: false,
               onClick: _onStartPause,
             ),
-            new IconButton(
-                icon: new Icon(Icons.view_list),
-                onPressed: widget.hasSavedTimers ? () => Navigator.pushNamed(context, '/saved') : null,
-            )
           ],
         ),
       )

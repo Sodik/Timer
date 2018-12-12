@@ -73,7 +73,9 @@ class TimerClass {
     }
 
     _spentTime = 0;
-    _timer.cancel();
+    if (_timer != null) {
+      _timer.cancel();
+    }
   }
 
   void _onTick(Timer) {

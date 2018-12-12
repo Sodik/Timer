@@ -15,6 +15,7 @@ void main() async {
 
 class _AppState extends State<App> {
   Duration _duration;
+  bool _isSavedTimer = false;
 
   _onSave(String name, String duration) {
     setState(() {
@@ -52,11 +53,13 @@ class _AppState extends State<App> {
           hasSavedTimers: _hasSavedTimers,
           onStart: (Duration duration) {
             _duration = duration;
+            _isSavedTimer = false;
             Navigator.pushNamed(context, '/timer');
           },
         ),
         '/timer': (context) => new TimerPage(
           duration: _duration,
+          isSavedTimer: _isSavedTimer,
           onSave: (String name, String duration) {
             _onSave(name, duration);
           },
@@ -65,6 +68,7 @@ class _AppState extends State<App> {
           onDelete: _onDelete,
           onStart: (Duration duration) {
             _duration = duration;
+            _isSavedTimer = true;
             Navigator.pushNamed(context, '/timer');
           },
           savedTimers: _savedTimers,

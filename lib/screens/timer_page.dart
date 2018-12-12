@@ -56,7 +56,7 @@ class _SaveDialogState extends State<_SaveDialog> {
                                     widget.onSave(_timerName, widget.duration.toString());
                                     Navigator.pop(context);
                                   } : null,
-                                  child: Text('Save'),
+                                  child: new Text('Save'),
                                 ),
                               ],
                             )
@@ -87,7 +87,7 @@ class _SaveDialog extends StatefulWidget {
 class TimerPageState extends State<TimerPage> {
   Dialog dialog;
   TimerClass _timer;
-  String _time = "";
+  String _time = '';
   bool _isRinging = false;
   bool _isUnmounted = false;
   final _tickPlayer = new Player(
@@ -110,7 +110,11 @@ class TimerPageState extends State<TimerPage> {
         _time = time;
       }),
     );
-    _timer.start();
+    if (!widget.isSavedTimer) {
+      _timer.start();
+    } else {
+      _time = formatTime(widget.duration.inMilliseconds);
+    }
   }
 
   void dispose() {
@@ -162,6 +166,35 @@ class TimerPageState extends State<TimerPage> {
     }
   }
 
+
+  List<Widget> _renderContent() {
+    var items = <Widget>[
+      new Text(
+        formatTime(widget.duration.inMilliseconds),
+        style: new TextStyle(
+          color: Colors.grey,
+        ),
+      ),
+      new Text(
+        _time,
+        style: new TextStyle(
+          fontSize: 60.0,
+        ),
+      ),
+    ];
+
+    if (!widget.isSavedTimer) {
+      items.add(
+        new FlatButton(
+          child: new Text('Save Timer'),
+          onPressed: _showDialog,
+        )
+      );
+    }
+
+    return items;
+  }
+
   void _showDialog() {
     showDialog(
       context: context,
@@ -181,24 +214,7 @@ class TimerPageState extends State<TimerPage> {
         children: <Widget>[
           new Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Text(
-                formatTime(widget.duration.inMilliseconds),
-                style: new TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-              new Text(
-                _time == null ? "" : _time,
-                style: new TextStyle(
-                  fontSize: 60.0,
-                ),
-              ),
-              new FlatButton(
-                child: new Text('Save Timer'),
-                onPressed: _showDialog,
-              )
-            ],
+            children: _renderContent(),
           ),
         ],
         ),
@@ -230,11 +246,13 @@ class TimerPageState extends State<TimerPage> {
 class TimerPage extends StatefulWidget {
   final Duration duration;
   final Function onSave;
+  final bool isSavedTimer;
 
   TimerPage({
     Key key,
     @required this.duration,
     @required this.onSave,
+    @required this.isSavedTimer,
   }): super(key: key);
 
   TimerPageState createState() => new TimerPageState();
