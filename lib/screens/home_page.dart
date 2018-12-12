@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+
 import '../widgets/start_pause_button.dart';
-import '../widgets/restore_button.dart';
 
 class HomePageState extends State<HomePage> {
   Duration _duration = Duration(seconds: 0);
@@ -24,36 +24,12 @@ class HomePageState extends State<HomePage> {
     });
   }
 
-  /*_onVolume() {
-    if (_soundOff) {
-      tickPlayer.on();
-      setState(() {
-        _soundOff = false;
-      });
-    } else {
-      tickPlayer.off();
-      setState(() {
-        _soundOff = true;
-      });
-    }
-  }*/
-
   Widget build(BuildContext context) {
     return new Scaffold(
       body: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          /*new Container(
-            padding: EdgeInsets.only(top: 20.0),
-            alignment: Alignment(0.95, 0),
-            child: new IconButton(
-              icon: new Icon(
-                  _soundOff ? Icons.volume_mute : Icons.volume_off
-              ),
-              onPressed: _onVolume,
-            ),
-          ),*/
           new Container(
             height: 140.0,
             child: new CupertinoTimerPicker(
@@ -68,15 +44,19 @@ class HomePageState extends State<HomePage> {
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new RestoreButton(
-              isActive: _duration.inMilliseconds > 0,
-              onClick: _onReset,
+            new IconButton(
+              onPressed: _duration.inMilliseconds > 0 ? _onReset : null,
+              icon: new Icon(Icons.restore),
             ),
             new StartPauseButton(
               isDisabled: _duration.inMilliseconds == 0,
               isActive: false,
               onClick: _onStartPause,
             ),
+            new IconButton(
+                icon: new Icon(Icons.view_list),
+                onPressed: widget.hasSavedTimers ? () => Navigator.pushNamed(context, '/saved') : null,
+            )
           ],
         ),
       )
@@ -86,8 +66,13 @@ class HomePageState extends State<HomePage> {
 
 class HomePage extends StatefulWidget {
   final ValueChanged<Duration> onStart;
+  final bool hasSavedTimers;
 
-  HomePage({ Key key, this.onStart }): super(key: key);
+  HomePage({
+    Key key,
+    @required this.onStart,
+    @required this.hasSavedTimers,
+  }): super(key: key);
 
   HomePageState createState() => new HomePageState();
 }

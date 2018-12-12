@@ -9,3 +9,13 @@ String formatTime(int time) {
 String _formatNumber(int number) {
   return number < 10 ? "0${number}" : number.toString();
 }
+
+Duration stringToDuration(String str) {
+  var splitteddStr = str.split(':');
+
+  return new Duration(
+      hours: int.parse(splitteddStr[0]),
+      minutes: int.parse(splitteddStr[1]),
+      seconds: int.parse(splitteddStr[2].split('.')[0])
+  );
+}

@@ -5,50 +5,39 @@ class Player {
   String file;
   int duration;
   AudioCache _cache;
-  AudioPlayer _player;
+  final AudioPlayer _player = new AudioPlayer();
   double _volume = 1.0;
 
   Player({ this.file, this.duration }) {
-    _cache = new AudioCache();
+    _player.setVolume(_volume);
+    _cache = new AudioCache(
+      fixedPlayer: _player,
+    );
     _cache.load(file);
   }
 
   play() async {
     var withDuration = duration != null;
 
-    if (_player != null) {
-      _player.stop();
-    }
-
-    _player = await (withDuration ? _cache.play(file) : _cache.loop(file));
-    _player.setVolume(_volume);
+    _player.stop();
+    await (withDuration ? _cache.play(file) : _cache.loop(file));
 
     if (withDuration) {
-      return new Future.delayed(Duration(seconds: 3), stop);
+      return new Future.delayed(Duration(seconds: duration), stop);
     }
   }
 
-  stop() {
-    if (_player == null) {
-      return;
-    }
-
+  void stop() {
     _player.stop();
   }
 
-  off() {
+  void soundOff() {
     _volume = 0;
-
-    if (_player != null) {
-      _player.setVolume(_volume);
-    }
+    _player.setVolume(_volume);
   }
 
-  on() {
+  void soundOn() {
     _volume = 1;
-
-    if (_player != null) {
-      _player.setVolume(_volume);
-    }
+    _player.setVolume(_volume);
   }
 }
