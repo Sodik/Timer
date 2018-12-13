@@ -1,4 +1,4 @@
-# flutter_mobile_test
+# Timer
 
 A new Flutter project.
 
