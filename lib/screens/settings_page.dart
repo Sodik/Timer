@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../managers/setttings.dart';
+class SettingsPage extends StatelessWidget {
+  final Function onClear;
+  final Function onChange;
+  final bool tickSound;
+  final bool alarmSound;
 
-class _SettingsPageState extends State<SettingsPage> {
-  final Settings settings;
-
-  _SettingsPageState({
-    @required this.settings,
-  });
+  SettingsPage({
+    Key key,
+    this.onClear,
+    @required this.onChange,
+    @required this.tickSound,
+    @required this.alarmSound,
+  }): super(key: key);
 
   Widget build(BuildContext context) {
     return new Scaffold(
       body: new Container(
         padding: EdgeInsets.all(30),
         child: new Column(
-          children: <Widget>[
+          children: <Widget> [
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 new Text("Play tick sound"),
                 new CupertinoSwitch(
-                  value: settings.get('tickSound'),
+                  value: tickSound,
                   onChanged: (bool value){
-                    setState(() {
-                      settings.set('tickSound', value);
-                    });
+                    onChange('tickSound', value);
                   },
                 ),
               ],
@@ -35,11 +38,9 @@ class _SettingsPageState extends State<SettingsPage> {
               children: <Widget>[
                 new Text("Play alarm sound"),
                 new CupertinoSwitch(
-                  value: settings.get('alarmSound'),
+                  value: alarmSound,
                   onChanged: (bool value){
-                    setState(() {
-                      settings.set('alarmSound', value);
-                    });
+                    onChange('alarmSound', value);
                   },
                 ),
               ],
@@ -47,7 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
             new Row(
               children: <Widget>[
                 new FlatButton(
-                  onPressed: widget.onClear,
+                  onPressed: onClear,
                   child: new Text('Clear All Data & Settings'),
                 ),
               ],
@@ -57,19 +58,4 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-}
-
-class SettingsPage extends StatefulWidget {
-  final Function onClear;
-  final Settings settings;
-
-  SettingsPage({
-    Key key,
-    @required this.settings,
-    @required this.onClear,
-  }): super(key: key);
-
-  _SettingsPageState createState() => new _SettingsPageState(
-    settings: this.settings,
-  );
 }

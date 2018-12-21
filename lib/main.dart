@@ -87,12 +87,18 @@ class _AppState extends State<App> {
           savedTimers: _savedTimers,
         ),
         '/settings': (context) => new SettingsPage(
-          settings: _settings,
-          onClear: () {
+          tickSound: _settings.get('tickSound'),
+          alarmSound: _settings.get('alarmSound'),
+          onChange: (String key, bool value) {
+            setState(() {
+              _settings.set(key, value);
+            });
+          },
+          onClear: widget.storage.getKeys().length > 0 ? (){
             setState(() {
               widget.storage.clear();
             });
-          },
+          } : null,
         ),
       }
     );
