@@ -5,43 +5,55 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/home_page.dart';
 import 'screens/timer_page.dart';
 import 'screens/saved_timers_page.dart';
-import 'formaters.dart';
+import 'screens/settings_page.dart';
+
+import 'managers/setttings.dart';
+import 'managers/saved_timers.dart';
 
 void main() async {
   final storage = await SharedPreferences.getInstance();
 
-  runApp(new App(storage: storage));
+  runApp(new App(
+    storage: storage,
+  ));
 }
 
 class _AppState extends State<App> {
   Duration _duration;
   bool _isSavedTimer = false;
+  Settings _settings;
+  SavedTimers _timers;
 
-  _onSave(String name, String duration) {
+  void initState() {
+    super.initState();
+
+    _settings = new Settings(
+      storage: widget.storage,
+    );
+    _timers = new SavedTimers(
+      storage: widget.storage,
+    );
+  }
+
+  void _onSave(String name, String duration) {
     setState(() {
-      widget.storage.setString(name, duration);
+      _isSavedTimer = true;
+      _timers.set(name, duration);
     });
   }
 
-  _onDelete(String key) {
+  void _onDelete(String key) {
     setState(() {
-      widget.storage.remove(key);
+     _timers.remove(key);
     });
   }
 
   Map<String, Duration> get _savedTimers{
-    var items = new Map<String, Duration>();
-    var keys = widget.storage.getKeys();
-
-    for (var key in keys) {
-      items.putIfAbsent(key, () => stringToDuration(widget.storage.getString(key)));
-    }
-
-    return items;
+    return _timers.items;
   }
 
-  bool get _hasSavedTimers{
-    return widget.storage.getKeys().length > 0;
+  bool get _hasSavedTimers {
+    return _savedTimers.length > 0;
   }
 
   Widget build(BuildContext context) {
@@ -59,6 +71,7 @@ class _AppState extends State<App> {
         ),
         '/timer': (context) => new TimerPage(
           duration: _duration,
+          settings: _settings,
           isSavedTimer: _isSavedTimer,
           onSave: (String name, String duration) {
             _onSave(name, duration);
@@ -72,6 +85,14 @@ class _AppState extends State<App> {
             Navigator.pushNamed(context, '/timer');
           },
           savedTimers: _savedTimers,
+        ),
+        '/settings': (context) => new SettingsPage(
+          settings: _settings,
+          onClear: () {
+            setState(() {
+              widget.storage.clear();
+            });
+          },
         ),
       }
     );

@@ -57,6 +57,10 @@ class HomePageState extends State<HomePage> {
               isActive: false,
               onClick: _onStartPause,
             ),
+            new IconButton(
+                icon: new Icon(Icons.settings),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+            ),
           ],
         ),
       )

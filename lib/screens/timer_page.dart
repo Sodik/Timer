@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vibrate/vibrate.dart';
 
 import '../widgets/start_pause_button.dart';
+import '../managers/setttings.dart';
 import '../formaters.dart';
 import '../player.dart';
 import '../timer.dart';
@@ -36,6 +38,7 @@ class _SaveDialogState extends State<_SaveDialog> {
                     child: new Column(
                       children: <Widget>[
                         new TextField(
+                          autofocus: true,
                           controller: inputController,
                           decoration: InputDecoration(
                               labelText: 'Enter your timer name'
@@ -88,8 +91,9 @@ class TimerPageState extends State<TimerPage> {
   Dialog dialog;
   TimerClass _timer;
   String _time = '';
+  final bool tickSound;
+  final bool alarmSound;
   bool _isRinging = false;
-  bool _isUnmounted = false;
   final _tickPlayer = new Player(
     file: 'tick.mp3',
   );
@@ -97,6 +101,12 @@ class TimerPageState extends State<TimerPage> {
     file: 'alarm.mp3',
     duration: 3,
   );
+
+  TimerPageState({
+    Key key,
+    this.tickSound,
+    this.alarmSound,
+  });
 
   void initState() {
     super.initState();
@@ -117,44 +127,77 @@ class TimerPageState extends State<TimerPage> {
     }
   }
 
+  void _playTick() {
+    if (tickSound) {
+      _tickPlayer.play();
+    }
+  }
+
+  void _stopTick() {
+    if (tickSound) {
+      _tickPlayer.stop();
+    }
+  }
+
+  Future _playAlarm() async {
+    if (alarmSound) {
+      setState(() {
+        _isRinging = true;
+      });
+
+      return _alarmPlayer.play().then((void res) {
+        if (mounted) {
+          setState(() {
+            _isRinging = false;
+          });
+        }
+      });
+    }
+
+    final bool canVibrate = await Vibrate.canVibrate;
+
+    if (canVibrate) {
+      return Vibrate.vibrate();
+    }
+  }
+
+  void _stopAlarm([bool withoutUpdatingState]) {
+    if (alarmSound) {
+      _alarmPlayer.stop();
+
+      if (withoutUpdatingState != null && !withoutUpdatingState) {
+        setState(() {
+          _isRinging = false;
+        });
+      }
+    }
+  }
+
   void dispose() {
     super.dispose();
 
-    _isUnmounted = true;
-
-    _tickPlayer.stop();
-    _alarmPlayer.stop();
     _timer.stop();
+    _stopTick();
+    _stopAlarm(true);
 
   }
 
   void _onStart() {
-    _alarmPlayer.stop();
-    _tickPlayer.play();
+    _stopAlarm();
+    _playTick();
   }
 
   void _onPause() {
-    _tickPlayer.stop();
+    _stopTick();
   }
 
-  void _onFinish() async {
-    _tickPlayer.stop();
-    setState(() {
-      _isRinging = true;
-    });
-    await _alarmPlayer.play();
-   if (!_isUnmounted) {
-     setState(() {
-       _isRinging = false;
-     });
-   }
+  void _onFinish() {
+    _stopTick();
+    _playAlarm();
   }
 
   void _onTurnRingOff() {
-    _alarmPlayer.stop();
-    setState(() {
-      _isRinging = false;
-    });
+    _stopAlarm();
   }
 
   void _onStartPause(bool shouldStart) {
@@ -247,13 +290,18 @@ class TimerPage extends StatefulWidget {
   final Duration duration;
   final Function onSave;
   final bool isSavedTimer;
+  final Settings settings;
 
   TimerPage({
     Key key,
-    @required this.duration,
     @required this.onSave,
+    @required this.duration,
+    @required this.settings,
     @required this.isSavedTimer,
   }): super(key: key);
 
-  TimerPageState createState() => new TimerPageState();
+  TimerPageState createState() => new TimerPageState(
+    tickSound: this.settings.get('tickSound'),
+    alarmSound: this.settings.get('alarmSound'),
+  );
 }

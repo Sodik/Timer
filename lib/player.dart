@@ -16,7 +16,7 @@ class Player {
     _cache.load(file);
   }
 
-  play() async {
+  Future<void> play() async {
     var withDuration = duration != null;
 
     _player.stop();
