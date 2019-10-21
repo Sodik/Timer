@@ -11,6 +11,7 @@ import 'managers/setttings.dart';
 import 'managers/saved_timers.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final storage = await SharedPreferences.getInstance();
 
   runApp(new App(
